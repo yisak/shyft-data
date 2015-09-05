@@ -1,0 +1,62 @@
+domain:
+  EPSG: 32632
+  nx: 122
+  ny: 90
+  step_x: 1000
+  step_y: 1000
+  upper_left_x: 557600.0
+  upper_left_y: 7040000.0
+parameter_overrides:
+  551:
+    kirchner:
+        c1: -2.539
+repository:
+  catchment_indices:
+  - 1
+  - 2
+  - 3
+  - 4
+
+  constructor: 
+  - !!python/name:shyft.orchestration.repository.cell_read_only_repository.FileCellRepository ''
+  - catchments: ../shyft_data/Gaula/shadow/catchments.rst
+    elevation: ../shyft_data/Gaula/shadow/ELEVATION.rst
+    landuse: ../shyft_data/Gaula/shadow/landuse.rst
+    forest: ../shyft_data/Gaula/shadow/Forest.rst
+    glacier: ../shyft_data/Gaula/shadow/Glaciers.rst
+stations:
+  database: !!python/name:shyft.orchestration.repository.station_data.StationDataFetcher ''
+  indices:
+  - id: 0
+    name: Vinje
+    uid: 678
+  - id: 1
+    name: Sellisj?en
+    uid: 506
+  - id: 2
+    name: Hersj?en
+    uid: 217
+  - id: 3
+    name: Selbu II
+    uid: 503
+  - id: 4
+    name: Nesj?en
+    uid: 421
+  - id: 5
+    name: Sakristian
+    uid: 489
+  - id: 6
+    name: Stugusj?en
+    uid: 574
+  - id: 7
+    name: Sylsj?en II
+    uid: 598
+  - id: 8
+    name: S?rungen
+    uid: 610
+  - id: 9
+    name: Finnkoisj?en
+    uid: 121
+  - id: 10
+    name: Nidarvoll
+    uid: 423

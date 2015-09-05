@@ -1,0 +1,58 @@
+dataset_repository:
+  constructor: !!python/name:shyft.orchestration.repository.input_source_repository.dataset_repository_factory ''
+destinations:
+- repository: ( !!python/name:shyft.orchestration.repository.SMG 'PROD')
+  targets:
+  - station_id: 1
+    type: SimDischarge
+    uid: /shyft/CTS/NeNi.Tya.Tilsig
+  - station_id: 1
+    type: AvgSWE
+    uid: /shyft/CTS/NeNi.Tya.SWE
+sources:
+- repository: [!!python/name:shyft.orchestration.repository.smg_data.SmgDataFetcher '', !!python/name:shyft.orchestration.repository.smg_data.PREPROD '']
+  types:
+  - stations:
+    - station_id: 2
+      uid: /shyft/CTS/Norge/NeNi.Hersjoen.nedbor
+    - station_id: 3
+      uid: /shyft/CTS/Norge/DNMI.Selbu.nedbor
+    - station_id: 4
+      uid: /shyft/CTS/Norge/NeNi.Nesjoen.nedbor
+    - station_id: 5
+      uid: /shyft/CTS/Norge/NeNi.Sakristian.nedbor
+    - station_id: 1
+      uid: /shyft/CTS/Norge/NeNi.Sellisjoen.nedbor
+    - station_id: 6
+      uid: /shyft/CTS/Norge/NeNi.Stuggusjoen.nedbor
+    - station_id: 7
+      uid: /shyft/CTS/Norge/NeNi.Sylsjoen.nedbor
+    - station_id: 8
+      uid: /shyft/CTS/Norge/NeNi.Soerungen.nedbor
+    type: precipitation
+  - stations:    
+    - station_id: 3
+      uid: /shyft/CTS/Norge/DNMI.Selbu.luftemp
+    - station_id: 9
+      uid: /shyft/CTS/Norge/NeNi.Finnkoisjoen.luftemp
+    - station_id: 2
+      uid: /shyft/CTS/Norge/NeNi.Hersjoen.luftemp
+    - station_id: 4
+      uid: /shyft/CTS/Norge/NeNi.Nesjoen.luftemp
+    - station_id: 10
+      uid: /shyft/CTS/Norge/NeNi.Nidarvoll.luftemp
+    - station_id: 5
+      uid: /shyft/CTS/Norge/NeNi.Sakristian.luftemp
+    - station_id: 1
+      uid: /shyft/CTS/Norge/NeNi.Sellisjoen.luftemp
+    - station_id: 6
+      uid: /shyft/CTS/Norge/NeNi.Stuggusjoen.luftemp
+    - station_id: 7
+      uid: /shyft/CTS/Norge/NeNi.Sylsjoen.luftemp
+    - station_id: 8
+      uid: /shyft/CTS/Norge/NeNi.Soerungen.luftemp
+    type: temperature
+  - stations:
+    - station_id: 1
+      uid: /computed.radiation.63N
+    type: radiation

@@ -1,0 +1,45 @@
+---
+model : !!python/name:api.FullPTGSKModel
+parameters:
+  interpolation:
+    idw:
+      max_members: 10
+      max_distance: 200000.0
+      precipitation_gradient: 2.0
+    btk:
+      gradient_sd: 0.25
+      gradient: -0.6
+      sill: 25.0
+      nugget: 0.5
+      range: 200000.0
+      zscale: 20.0
+  model:
+    priestley_taylor:
+      alpha: 1.26
+      albedo: 0.2
+    gamma_snow:
+      winter_end_day_of_year: 100
+      initial_bare_ground_fraction: 0.04
+      snow_cv: 0.4
+      snow_tx: -0.5
+      wind_scale: 2.0
+      wind_const: 1.0
+      max_water: 0.1
+      surface_magnitude: 30.0
+      max_albedo: 0.9
+      min_albedo: 0.6
+      fast_albedo_decay_rate: 5.0
+      slow_albedo_decay_rate: 5.0
+      snowfall_reset_depth: 5.0
+      glacier_albedo: 0.4
+      calculate_iso_pot_energy: false
+    kirchner:
+      c1: -2.439
+      c2: 0.966
+      c3: -0.10
+    actual_evapotranspiration:
+      scale_factor: 1.5
+    data:
+      constant_wind_speed: 2.0
+      constant_relative_humidity: 0.7
+...
