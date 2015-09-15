@@ -18,14 +18,14 @@ repository:
   - 4
 
   constructor: 
-  - !!python/name:shyft.orchestration.repository.cell_read_only_repository.FileCellRepository ''
+  - !!python/name:shyft.repository.cell_read_only_repository.FileCellRepository ''
   - catchments: ../shyft_data/Gaula/shadow/catchments.rst
     elevation: ../shyft_data/Gaula/shadow/ELEVATION.rst
     landuse: ../shyft_data/Gaula/shadow/landuse.rst
     forest: ../shyft_data/Gaula/shadow/Forest.rst
     glacier: ../shyft_data/Gaula/shadow/Glaciers.rst
 stations:
-  database: !!python/name:shyft.orchestration.repository.station_data.StationDataFetcher ''
+  database: !!python/name:shyft.repository.station_data.StationDataFetcher ''
   indices:
   - id: 0
     name: Vinje
