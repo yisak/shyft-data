@@ -1,6 +1,7 @@
 from netCDF4 import Dataset
 from numpy import where
 from numpy import intersect1d
+from shyft import shyftdata_dir
 
 
 def reduce_netcdf(orig, dest, box):
@@ -46,23 +47,16 @@ def reduce_netcdf(orig, dest, box):
 
 
 if __name__ == "__main__":
-    from os.path import pardir
-    from os.path import dirname
-    from os.path import join
+    from os import path
+    import sys
 
-    ibase_dir = join(dirname(__file__), "arome")
-    obase_dir = join(dirname(__file__), "arome-testdata")
-    id1 = join(ibase_dir, "arome_metcoop_default2_5km_20150823_06.nc")
-    id2 = join(ibase_dir, "arome_metcoop_test2_5km_20150823_06.nc")
-    od1 = join(obase_dir, "arome_metcoop_red_default2_5km_20150823_06.nc")
-    od2 = join(obase_dir, "arome_metcoop_red_test2_5km_20150823_06.nc")
-    ids1 = Dataset(id1)
-    ods1 = Dataset(od1, "w")
-    ids2 = Dataset(id2)
-    ods2 = Dataset(od2, "w")
+    fromfile = sys.argv[-2]
+    tofile = path.join(sys.argv[-1], path.split(fromfile)[-1])
+    if not path.isfile(fromfile):
+        raise IOError("File '{}' not found".format(fromfile))
+    ids = Dataset(fromfile)
+    ods = Dataset(tofile, "w")
     x_min, x_max = -69202.0, 15167.0
     y_min, y_max = 316649.0, 421070.0
-    reduce_netcdf(ids1, ods1, [x_min, x_max, y_min, y_max])
-    reduce_netcdf(ids2, ods2, [x_min, x_max, y_min, y_max])
-    ods1.close()
-    ods2.close()
+    reduce_netcdf(ids, ods, [x_min, x_max, y_min, y_max])
+    ods.close()
