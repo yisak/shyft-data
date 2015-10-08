@@ -1,41 +1,55 @@
+from __future__ import print_function
+from __future__ import absolute_import
 from netCDF4 import Dataset
-from numpy import where
-from numpy import intersect1d
+import numpy as np
 from shyft import shyftdata_dir
+from pyproj import Proj
+from pyproj import transform
 
 
-def reduce_netcdf(orig, dest, box):
+def reduce_netcdf(orig, dest, epsg, box):
     """
     Very simple script to limit data in orig to portion inside the box.
     """
-    x_min, x_max, y_min, y_max = box
     data_vars = orig.variables
+    x = data_vars["x"][:] 
+    y = data_vars["y"][:] 
+
+    # Project box in epsg coordinates to dataset coordinates
+    for v in data_vars.itervalues():
+        if hasattr(v, "grid_mapping"):
+            target_cs = "{} +towgs84=0,0,0".format(data_vars[v.grid_mapping].proj4)
+            box_cs = ("+proj=utm +zone={} +ellps={} +datum={}"
+                      " +units=m +no_defs".format(int(epsg) - 32600, "WGS84", "WGS84"))
+            x_min, x_max, y_min, y_max  = box
+            b_x = x_min, x_max, x_max, x_min
+            b_y = y_max, y_max, y_min, y_min
+            b_x, b_y = transform(Proj(box_cs), Proj(target_cs), b_x, b_y)
+            x_min, x_max = min(b_x), max(b_x)
+            y_min, y_max = min(b_y), max(b_y)
+            break
 
     # Limit data
-    x = data_vars["x"][:] 
-    x1 = where(x >= x_min)[0]
-    x2 = where(x <= x_max)[0]
-    x_inds = intersect1d(x1, x2, assume_unique=True)
-    y = data_vars["y"][:] 
-    y1 = where(y >= y_min)[0]
-    y2 = where(y <= y_max)[0]
-    y_inds = intersect1d(y1, y2, assume_unique=True)
+    x_mask = (x >= x_min) == (x <= x_max)
+    y_mask = (y >= y_min) == (y <= y_max)
+    n_x = np.count_nonzero(x_mask)
+    n_y = np.count_nonzero(y_mask)
 
     for (d, v) in orig.dimensions.iteritems():
         if d not in ["x", "y"]: # Copy dimensions
             dest.createDimension(d, len(v))
         elif d == "x":
-            dest.createDimension(d, len(x_inds))
+            dest.createDimension(d, n_x)
         elif d == "y":
-            dest.createDimension(d, len(y_inds))
+            dest.createDimension(d, n_y)
 
     for (k, v) in data_vars.iteritems():
         # Construct slice
         data_slice = len(v.dimensions)*[slice(None)]
         if "x" in v.dimensions:
-            data_slice[v.dimensions.index("x")] = x_inds
+            data_slice[v.dimensions.index("x")] = x_mask
         if "y" in v.dimensions:
-            data_slice[v.dimensions.index("y")] = y_inds
+            data_slice[v.dimensions.index("y")] = y_mask
         # Write all variables back, but slice in xy-direction
         dest.createVariable(k, v.datatype, v.dimensions)
         dest.variables[k][:] = v[tuple(data_slice)]
@@ -56,7 +70,8 @@ if __name__ == "__main__":
         raise IOError("File '{}' not found".format(fromfile))
     ids = Dataset(fromfile)
     ods = Dataset(tofile, "w")
-    x_min, x_max = -69202.0, 15167.0
-    y_min, y_max = 316649.0, 421070.0
-    reduce_netcdf(ids, ods, [x_min, x_max, y_min, y_max])
+    epsg = "32633"
+    x_min, x_max =  21000.0,  260000.0
+    y_min, y_max = 6840000.0, 6900000.0
+    reduce_netcdf(ids, ods, epsg, [x_min, x_max, y_min, y_max])
     ods.close()
