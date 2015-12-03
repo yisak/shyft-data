@@ -16,9 +16,11 @@ def reduce_netcdf(orig, dest, epsg, box):
     y = data_vars["y"][:] 
 
     # Project box in epsg coordinates to dataset coordinates
-    for v in data_vars.itervalues():
+    #for v in data_vars.itervalues():
+    for v in data_vars.values():
         if hasattr(v, "grid_mapping"):
-            target_cs = "{} +towgs84=0,0,0".format(data_vars[v.grid_mapping].proj4)
+            #target_cs = "{} +towgs84=0,0,0".format(data_vars[v.grid_mapping].proj4)
+            target_cs = data_vars[v.grid_mapping].proj4
             box_cs = ("+proj=utm +zone={} +ellps={} +datum={}"
                       " +units=m +no_defs".format(int(epsg) - 32600, "WGS84", "WGS84"))
             x_min, x_max, y_min, y_max  = box
@@ -35,7 +37,8 @@ def reduce_netcdf(orig, dest, epsg, box):
     n_x = np.count_nonzero(x_mask)
     n_y = np.count_nonzero(y_mask)
 
-    for (d, v) in orig.dimensions.iteritems():
+    #for (d, v) in orig.dimensions.iteritems():
+    for (d, v) in orig.dimensions.items():
         if d not in ["x", "y"]: # Copy dimensions
             dest.createDimension(d, len(v))
         elif d == "x":
@@ -43,7 +46,8 @@ def reduce_netcdf(orig, dest, epsg, box):
         elif d == "y":
             dest.createDimension(d, n_y)
 
-    for (k, v) in data_vars.iteritems():
+    #for (k, v) in data_vars.iteritems():
+    for (k, v) in data_vars.items():
         # Construct slice
         data_slice = len(v.dimensions)*[slice(None)]
         if "x" in v.dimensions:
@@ -53,10 +57,11 @@ def reduce_netcdf(orig, dest, epsg, box):
         # Write all variables back, but slice in xy-direction
         dest.createVariable(k, v.datatype, v.dimensions)
         dest.variables[k][:] = v[tuple(data_slice)]
-        if hasattr(v, "grid_mapping"):
-            dest.variables[k].grid_mapping = v.grid_mapping
-        if k == "projection_lambert":
-            dest.variables[k].proj4 = v.proj4
+#        if hasattr(v, "grid_mapping"):
+#            dest.variables[k].grid_mapping = v.grid_mapping
+#        if k == "projection_lambert":
+#            dest.variables[k].proj4 = v.proj4
+        dest.variables[k].setncatts({k_attr: v.getncattr(k_attr) for k_attr in v.ncattrs()})
     
 
 
